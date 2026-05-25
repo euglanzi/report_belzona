@@ -15,13 +15,19 @@
       --bg: #ffffff;
       --surface: #ffffff;
       --surface2: #f5f6f8;
-      --accent: #e63946;
-      --accent2: #457b9d;
+
+      /* TUTTO BLU (tranne SI/NO) */
+      --accent: #1e3a5f;       /* blu principale */
+      --accent2: #2c5d8a;      /* blu secondario */
+
       --text: #1a1a2e;
       --text-dim: #5b6475;
       --border: #d9dee7;
-      --ok: #2a9d8f;
-      --danger: #c1121f;
+
+      /* SOLO SI/NO */
+      --ok: #2a9d8f;           /* SI verde */
+      --danger: #c1121f;       /* NO rosso */
+
       --radius: 10px;
       --font-head: 'Barlow Condensed', sans-serif;
       --font-body: 'Barlow', sans-serif;
@@ -173,7 +179,6 @@
     .field-input:focus { outline: none; border-color: var(--accent2); }
     .field-input::placeholder { color: #9aa3b2; }
     textarea.field-input { resize: vertical; min-height: 90px; }
-
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -206,20 +211,27 @@
     @media (max-width: 520px) {
       .check-grid { grid-template-columns: 1fr; }
     }
+
+    /* ✅ CHECKBOX CLICCABILI (fix) */
     .check-item {
       display: flex;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .check-item * { pointer-events: none; }
+    .check-item {
       align-items: center;
       gap: 10px;
       background: #fff;
       border: 1.5px solid var(--border);
       border-radius: 8px;
       padding: 10px 12px;
-      cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
     .check-item input[type="checkbox"] { display:none; }
+
     .check-box {
       width: 20px;
       height: 20px;
@@ -233,13 +245,15 @@
       transition: all 0.2s;
     }
     .check-box svg { display:none; }
+
+    /* ✅ Checkbox selezionate in BLU (non verde) */
     .check-item.checked {
-      border-color: var(--ok);
-      background: rgba(42,157,143,0.08);
+      border-color: var(--accent2);
+      background: rgba(44,93,138,0.10);
     }
     .check-item.checked .check-box {
-      background: var(--ok);
-      border-color: var(--ok);
+      background: var(--accent2);
+      border-color: var(--accent2);
     }
     .check-item.checked .check-box svg { display:block; }
     .check-label { font-size: 14px; font-weight: 500; color: var(--text); }
@@ -287,6 +301,8 @@
       cursor:pointer;
       -webkit-tap-highlight-color: transparent;
     }
+
+    /* ✅ SOLO SI/NO colorati */
     .yn-btn.active-si { background: var(--ok); border-color: var(--ok); color:#fff; }
     .yn-btn.active-no { background: var(--danger); border-color: var(--danger); color:#fff; }
 
@@ -305,6 +321,7 @@
       max-width: 650px;
       margin: 0 auto;
     }
+
     .btn-reset {
       flex: 0 0 auto;
       background: var(--surface2);
@@ -321,6 +338,8 @@
       align-items:center;
       justify-content:center;
     }
+
+    /* ✅ INVIA REPORT in BLU */
     .btn-send {
       flex: 1;
       background: var(--accent);
@@ -364,7 +383,7 @@
       white-space: nowrap;
     }
     .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
-    .toast.error { background: var(--accent); }
+    .toast.error { background: var(--danger); }
 
     /* MODAL */
     .modal-overlay {
@@ -415,19 +434,17 @@
     }
     .modal-btn.primary { background: var(--accent); color:#fff; }
     .modal-btn.secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
-
     .divider { height:1px; background: var(--border); margin: 12px 0; }
   </style>
 </head>
-<body>
 
+<body>
   <!-- HEADER -->
   <div class="app-header">
     <div class="brand">
       <span class="brand-top">BS Distributore Autorizzato</span>
       <span class="brand-name">REPORT SOPRALLUOGO</span>
     </div>
-
     <div class="header-right">
       <span class="form-counter" id="formCounter">N° 1</span>
       <button class="settings-btn" onclick="document.getElementById('configModal').classList.add('open')" title="Impostazioni">
@@ -483,6 +500,7 @@
         </div>
 
         <div class="divider"></div>
+
         <span class="subsection-label">Problema Riscontrato</span>
         <div class="check-grid">
           <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkCorrosione"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Corrosione</span></label>
@@ -490,6 +508,7 @@
           <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkErosione"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Erosione</span></label>
           <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkCricche"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Cricche</span></label>
         </div>
+
         <div class="field-row"><label class="field-label">Note (particolarità del processo, ecc.)</label><textarea class="field-input" id="noteSez2" placeholder="Note operative..."></textarea></div>
       </div>
     </div>
@@ -499,6 +518,7 @@
       <div class="section-header"><div class="section-num">3</div><span class="section-title">Sicurezza</span></div>
       <div class="section-body">
         <span class="subsection-label">Condizioni Ambientali ed Operative nell'Area di Lavoro</span>
+
         <div class="yn-grid">
           <div class="yn-item"><span class="yn-label-text">Aggressivi Chimici</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="ynAggressivi">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="ynAggressivi">NO</button></div></div>
           <div class="yn-item"><span class="yn-label-text">Area AtEx</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="ynAtex">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="ynAtex">NO</button></div></div>
@@ -509,6 +529,7 @@
           <div class="yn-item"><span class="yn-label-text">Limitazione 220V</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="yn220V">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="yn220V">NO</button></div></div>
           <div class="yn-item"><span class="yn-label-text">Necessità Formazione</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="ynFormazione">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="ynFormazione">NO</button></div></div>
         </div>
+
         <div class="field-row"><label class="field-label">Note (aspetti integrativi)</label><textarea class="field-input" id="noteSez3" placeholder="Note sicurezza..."></textarea></div>
       </div>
     </div>
@@ -517,7 +538,6 @@
     <div class="section-card">
       <div class="section-header"><div class="section-num">4</div><span class="section-title">Luogo di lavoro</span></div>
       <div class="section-body">
-
         <span class="subsection-label">Ubicazione</span>
         <div class="two-col">
           <div class="field-row"><label class="field-label">Piano di lavoro</label><input class="field-input" id="sez4PianoLavoro" /></div>
@@ -537,9 +557,11 @@
           <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Scale"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Scale</span></label>
           <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Ascensore"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Ascensore</span></label>
         </div>
+
         <div class="field-row"><label class="field-label">Passi Uomo (diam)</label><input class="field-input" id="sez4PassiUomoDiam" /></div>
 
-        <div class="field-row"><label class="field-label">Illuminazione</label>
+        <div class="field-row">
+          <label class="field-label">Illuminazione</label>
           <select class="field-input" id="sez4Illuminazione">
             <option value=""></option>
             <option value="Insufficiente">Insufficiente</option>
@@ -555,7 +577,8 @@
           <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Mano"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Mano</span></label>
         </div>
 
-        <div class="field-row"><label class="field-label">Ventilazione / Ricambio aria</label>
+        <div class="field-row">
+          <label class="field-label">Ventilazione / Ricambio aria</label>
           <select class="field-input" id="sez4Ventilazione">
             <option value=""></option>
             <option value="Insufficiente">Insufficiente</option>
@@ -566,7 +589,6 @@
 
         <div class="field-row"><label class="field-label">Note (descrizione accessi, spazi confinati, ecc.)</label><textarea class="field-input" id="noteSez4"></textarea></div>
         <div class="field-row"><label class="field-label">Note e raccolta dati</label><textarea class="field-input" id="noteRaccoltaDati" style="min-height:140px"></textarea></div>
-
       </div>
     </div>
 
@@ -575,8 +597,12 @@
   <!-- BOTTOM BAR -->
   <div class="bottom-bar">
     <button class="btn-reset" onclick="resetForm()" title="Nuovo form">＋</button>
+
     <button class="btn-send" id="btnSend" onclick="sendForm()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
       INVIA REPORT
     </button>
   </div>
@@ -593,10 +619,12 @@
         2. Deploy → <em>New deployment</em> → <em>Web app</em><br>
         3. Copia l'URL che termina con <strong>/exec</strong> e incollalo qui
       </div>
+
       <div class="field-row">
         <label class="field-label">URL Google Apps Script</label>
         <input class="field-input" type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" />
       </div>
+
       <div class="modal-btns">
         <button class="modal-btn secondary" onclick="document.getElementById('configModal').classList.remove('open')">Annulla</button>
         <button class="modal-btn primary" onclick="saveConfig()">Salva</button>
@@ -607,6 +635,7 @@
   <script>
     let formCount = parseInt(localStorage.getItem('bs_form_count') || '1');
     let ynState = {};
+
     document.getElementById('formCounter').textContent = 'N° ' + formCount;
 
     const d = document.getElementById('data');
@@ -615,12 +644,14 @@
     const savedUrl = localStorage.getItem('bs_script_url');
     if (savedUrl) document.getElementById('scriptUrl').value = savedUrl;
 
-    // Sincronizza il contatore dal Google Apps Script (via JSONP, evita problemi CORS)
+    // ✅ Sync contatore da GAS via JSONP (evita problemi CORS)
     function loadCounterFromServer(afterSend = false) {
       const scriptUrl = localStorage.getItem('bs_script_url');
       if (!scriptUrl) return;
 
       const cbName = 'bsCounterCb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+      const s = document.createElement('script');
+
       window[cbName] = function(resp) {
         try {
           const lastNum = Number((resp && (resp.numero_report ?? resp.last_num)) ?? 0) || 0;
@@ -633,22 +664,17 @@
             setTimeout(() => resetForm(), 900);
           }
         } finally {
-          // cleanup
           try { delete window[cbName]; } catch(e) {}
           if (s && s.parentNode) s.parentNode.removeChild(s);
         }
       };
 
-      const s = document.createElement('script');
       const sep = scriptUrl.indexOf('?') >= 0 ? '&' : '?';
       s.src = scriptUrl + sep + 'callback=' + encodeURIComponent(cbName) + '&t=' + Date.now();
       s.onerror = function() {
         try { delete window[cbName]; } catch(e) {}
         if (afterSend) {
-          // fallback locale in caso di errore di rete
-          formCount = parseInt(localStorage.getItem('bs_form_count') || String(formCount || 1));
-          document.getElementById('formCounter').textContent = 'N° ' + formCount;
-          showToast('Report inviato (sync numero non disponibile)');
+          showToast('Report inviato (sync numero non disponibile)', 'error');
           setTimeout(() => resetForm(), 900);
         }
       };
@@ -694,6 +720,7 @@
         cicli_lavaggio: v('cicliLavaggio'),
         ciclature_termiche: v('ciclatureTermiche'),
         tempi_rientro: v('tempiRientro'),
+
         problema_corrosione: document.getElementById('chkCorrosione').checked ? 'SÌ' : 'NO',
         problema_vaiolature: document.getElementById('chkVaiolature').checked ? 'SÌ' : 'NO',
         problema_erosione: document.getElementById('chkErosione').checked ? 'SÌ' : 'NO',
@@ -713,16 +740,21 @@
         sez4_piano_lavoro: v('sez4PianoLavoro'),
         sez4_movimentazione: v('sez4Movimentazione'),
         sez4_distanza_parcheggio: v('sez4DistanzaParcheggio'),
+
         sez4_area_aperto: document.getElementById('chkSez4Aperto').checked ? 'SÌ' : 'NO',
         sez4_area_chiuso: document.getElementById('chkSez4Chiuso').checked ? 'SÌ' : 'NO',
         sez4_area_riscaldata: document.getElementById('chkSez4Riscaldata').checked ? 'SÌ' : 'NO',
+
         sez4_scale: document.getElementById('chkSez4Scale').checked ? 'SÌ' : 'NO',
         sez4_ascensore: document.getElementById('chkSez4Ascensore').checked ? 'SÌ' : 'NO',
+
         sez4_passi_uomo_diam: v('sez4PassiUomoDiam'),
         sez4_illuminazione: v('sez4Illuminazione'),
+
         sez4_corpo: document.getElementById('chkSez4Corpo').checked ? 'SÌ' : 'NO',
         sez4_braccio: document.getElementById('chkSez4Braccio').checked ? 'SÌ' : 'NO',
         sez4_mano: document.getElementById('chkSez4Mano').checked ? 'SÌ' : 'NO',
+
         sez4_ventilazione: v('sez4Ventilazione'),
         note_sez4: v('noteSez4'),
         note_raccolta_dati: v('noteRaccoltaDati')
@@ -743,7 +775,7 @@
       btn.textContent = 'INVIO IN CORSO...';
 
       try {
-        // POST 'simple' per evitare preflight: text/plain + no-cors
+        // POST semplice (evita preflight CORS): text/plain + no-cors
         await fetch(scriptUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -751,14 +783,16 @@
           body: JSON.stringify(data)
         });
 
-        // Dopo l'invio, riallineo il contatore leggendo l'ultimo numero dal foglio (JSONP)
+        // riallineo il numero dal foglio (JSONP)
         loadCounterFromServer(true);
+
       } catch (e) {
         console.error(e);
         showToast('Errore di connessione', 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> INVIA REPORT';
+        btn.innerHTML =
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> INVIA REPORT';
       }
     }
 
@@ -777,7 +811,6 @@
 
       document.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('active-si','active-no'));
       ynState = {};
-
       document.getElementById('formCounter').textContent = 'N° ' + formCount;
       window.scrollTo({ top: 0, behavior: 'smooth' });
       showToast('✦ Nuovo form pronto');
@@ -789,6 +822,8 @@
         localStorage.setItem('bs_script_url', url);
         document.getElementById('configModal').classList.remove('open');
         showToast('✓ URL salvato');
+        // sync immediato dopo salvataggio
+        try { loadCounterFromServer(false); } catch(e) {}
       }
     }
 
@@ -808,6 +843,5 @@
       });
     }
   </script>
-
 </body>
 </html>
