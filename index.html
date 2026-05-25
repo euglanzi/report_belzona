@@ -9,32 +9,22 @@
   <title>Report Sopralluogo</title>
   <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --bg: #ffffff;
       --surface: #ffffff;
       --surface2: #f5f6f8;
-
-      /* TUTTO BLU (tranne SI/NO) */
-      --accent: #1e3a5f;       /* blu principale */
-      --accent2: #2c5d8a;      /* blu secondario */
-
+      --accent: #e63946;
+      --accent2: #457b9d;
       --text: #1a1a2e;
       --text-dim: #5b6475;
       --border: #d9dee7;
-
-      /* SOLO SI/NO */
-      --ok: #2a9d8f;           /* SI verde */
-      --danger: #c1121f;       /* NO rosso */
-
+      --ok: #2a9d8f;
       --radius: 10px;
       --font-head: 'Barlow Condensed', sans-serif;
       --font-body: 'Barlow', sans-serif;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -43,7 +33,6 @@
       min-height: 100vh;
       padding-bottom: 110px;
     }
-
     /* HEADER */
     .app-header {
       background: var(--surface);
@@ -104,14 +93,12 @@
       width: auto;
       object-fit: contain;
     }
-
     /* CONTENT */
     .content {
       padding: 18px 14px;
       max-width: 650px;
       margin: 0 auto;
     }
-
     /* SECTION CARDS */
     .section-card {
       background: var(--surface);
@@ -152,7 +139,6 @@
       color: var(--text);
     }
     .section-body { padding: 14px; }
-
     /* FIELDS */
     .field-row { margin-bottom: 14px; }
     .field-label {
@@ -188,7 +174,6 @@
       .two-col { grid-template-columns: 1fr; }
       .belzona-logo { height: 24px; }
     }
-
     /* SUBSECTIONS */
     .subsection-label {
       font-family: var(--font-head);
@@ -200,7 +185,6 @@
       margin: 14px 0 10px;
       display: block;
     }
-
     /* CHECK GRID */
     .check-grid {
       display: grid;
@@ -211,27 +195,20 @@
     @media (max-width: 520px) {
       .check-grid { grid-template-columns: 1fr; }
     }
-
-    /* ✅ CHECKBOX CLICCABILI (fix) */
     .check-item {
       display: flex;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .check-item * { pointer-events: none; }
-    .check-item {
       align-items: center;
       gap: 10px;
       background: #fff;
       border: 1.5px solid var(--border);
       border-radius: 8px;
       padding: 10px 12px;
+      cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
     .check-item input[type="checkbox"] { display:none; }
-
     .check-box {
       width: 20px;
       height: 20px;
@@ -245,19 +222,16 @@
       transition: all 0.2s;
     }
     .check-box svg { display:none; }
-
-    /* ✅ Checkbox selezionate in BLU (non verde) */
     .check-item.checked {
-      border-color: var(--accent2);
-      background: rgba(44,93,138,0.10);
+      border-color: var(--ok);
+      background: rgba(42,157,143,0.08);
     }
     .check-item.checked .check-box {
-      background: var(--accent2);
-      border-color: var(--accent2);
+      background: var(--ok);
+      border-color: var(--ok);
     }
     .check-item.checked .check-box svg { display:block; }
     .check-label { font-size: 14px; font-weight: 500; color: var(--text); }
-
     /* SI/NO TOGGLE */
     .yn-grid {
       display:grid;
@@ -301,11 +275,8 @@
       cursor:pointer;
       -webkit-tap-highlight-color: transparent;
     }
-
-    /* ✅ SOLO SI/NO colorati */
     .yn-btn.active-si { background: var(--ok); border-color: var(--ok); color:#fff; }
-    .yn-btn.active-no { background: var(--danger); border-color: var(--danger); color:#fff; }
-
+    .yn-btn.active-no { background: var(--accent); border-color: var(--accent); color:#fff; }
     /* BOTTOM BAR */
     .bottom-bar {
       position: fixed;
@@ -321,7 +292,6 @@
       max-width: 650px;
       margin: 0 auto;
     }
-
     .btn-reset {
       flex: 0 0 auto;
       background: var(--surface2);
@@ -338,8 +308,6 @@
       align-items:center;
       justify-content:center;
     }
-
-    /* ✅ INVIA REPORT in BLU */
     .btn-send {
       flex: 1;
       background: var(--accent);
@@ -360,7 +328,6 @@
       gap: 8px;
     }
     .btn-send:disabled { opacity:0.55; cursor:not-allowed; }
-
     /* TOAST */
     .toast {
       position: fixed;
@@ -383,8 +350,7 @@
       white-space: nowrap;
     }
     .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
-    .toast.error { background: var(--danger); }
-
+    .toast.error { background: var(--accent); }
     /* MODAL */
     .modal-overlay {
       display:none;
@@ -437,7 +403,6 @@
     .divider { height:1px; background: var(--border); margin: 12px 0; }
   </style>
 </head>
-
 <body>
   <!-- HEADER -->
   <div class="app-header">
@@ -498,17 +463,14 @@
           <div class="field-row"><label class="field-label">Ciclature Termiche</label><input class="field-input" id="ciclatureTermiche"/></div>
           <div class="field-row"><label class="field-label">Tempi Rientro Servizio</label><input class="field-input" id="tempiRientro"/></div>
         </div>
-
         <div class="divider"></div>
-
         <span class="subsection-label">Problema Riscontrato</span>
         <div class="check-grid">
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkCorrosione"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Corrosione</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkVaiolature"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Vaiolature</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkErosione"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Erosione</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkCricche"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Cricche</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkCorrosione"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Corrosione</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkVaiolature"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Vaiolature</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkErosione"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Erosione</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkCricche"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Cricche</span></label>
         </div>
-
         <div class="field-row"><label class="field-label">Note (particolarità del processo, ecc.)</label><textarea class="field-input" id="noteSez2" placeholder="Note operative..."></textarea></div>
       </div>
     </div>
@@ -518,7 +480,6 @@
       <div class="section-header"><div class="section-num">3</div><span class="section-title">Sicurezza</span></div>
       <div class="section-body">
         <span class="subsection-label">Condizioni Ambientali ed Operative nell'Area di Lavoro</span>
-
         <div class="yn-grid">
           <div class="yn-item"><span class="yn-label-text">Aggressivi Chimici</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="ynAggressivi">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="ynAggressivi">NO</button></div></div>
           <div class="yn-item"><span class="yn-label-text">Area AtEx</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="ynAtex">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="ynAtex">NO</button></div></div>
@@ -529,7 +490,6 @@
           <div class="yn-item"><span class="yn-label-text">Limitazione 220V</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="yn220V">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="yn220V">NO</button></div></div>
           <div class="yn-item"><span class="yn-label-text">Necessità Formazione</span><div class="yn-buttons"><button class="yn-btn" onclick="setYN(this,'si')" data-field="ynFormazione">SÌ</button><button class="yn-btn" onclick="setYN(this,'no')" data-field="ynFormazione">NO</button></div></div>
         </div>
-
         <div class="field-row"><label class="field-label">Note (aspetti integrativi)</label><textarea class="field-input" id="noteSez3" placeholder="Note sicurezza..."></textarea></div>
       </div>
     </div>
@@ -547,15 +507,15 @@
 
         <span class="subsection-label">Area di lavoro</span>
         <div class="check-grid">
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Aperto"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">All'aperto</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Chiuso"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Al chiuso</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Riscaldata"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Riscaldata</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Aperto"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">All'aperto</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Chiuso"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Al chiuso</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Riscaldata"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Riscaldata</span></label>
         </div>
 
         <span class="subsection-label">Accessibilità</span>
         <div class="check-grid">
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Scale"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Scale</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Ascensore"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Ascensore</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Scale"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Scale</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Ascensore"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Ascensore</span></label>
         </div>
 
         <div class="field-row"><label class="field-label">Passi Uomo (diam)</label><input class="field-input" id="sez4PassiUomoDiam" /></div>
@@ -572,9 +532,9 @@
 
         <span class="subsection-label">Spazi Operativi</span>
         <div class="check-grid">
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Corpo"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Corpo</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Braccio"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Braccio</span></label>
-          <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" id="chkSez4Mano"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Mano</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Corpo"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Corpo</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Braccio"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Braccio</span></label>
+          <label class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox" id="chkSez4Mano"><div class="check-box"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="check-label">Mano</span></label>
         </div>
 
         <div class="field-row">
@@ -599,10 +559,7 @@
     <button class="btn-reset" onclick="resetForm()" title="Nuovo form">＋</button>
 
     <button class="btn-send" id="btnSend" onclick="sendForm()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       INVIA REPORT
     </button>
   </div>
@@ -635,56 +592,21 @@
   <script>
     let formCount = parseInt(localStorage.getItem('bs_form_count') || '1');
     let ynState = {};
-
     document.getElementById('formCounter').textContent = 'N° ' + formCount;
-
     const d = document.getElementById('data');
     if (d) d.valueAsDate = new Date();
-
     const savedUrl = localStorage.getItem('bs_script_url');
     if (savedUrl) document.getElementById('scriptUrl').value = savedUrl;
 
-    // ✅ Sync contatore da GAS via JSONP (evita problemi CORS)
-    function loadCounterFromServer(afterSend = false) {
-      const scriptUrl = localStorage.getItem('bs_script_url');
-      if (!scriptUrl) return;
+    // ✅ FIX CHECKBOX (solo fix richiesto)
+    function toggleCheck(el, ev) {
+      // evita comportamenti speciali del <label> e doppi toggle
+      if (ev) ev.preventDefault();
 
-      const cbName = 'bsCounterCb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
-      const s = document.createElement('script');
-
-      window[cbName] = function(resp) {
-        try {
-          const lastNum = Number((resp && (resp.numero_report ?? resp.last_num)) ?? 0) || 0;
-          formCount = lastNum + 1;
-          localStorage.setItem('bs_form_count', formCount);
-          document.getElementById('formCounter').textContent = 'N° ' + formCount;
-
-          if (afterSend) {
-            showToast('✓ Report N°' + lastNum + ' inviato!');
-            setTimeout(() => resetForm(), 900);
-          }
-        } finally {
-          try { delete window[cbName]; } catch(e) {}
-          if (s && s.parentNode) s.parentNode.removeChild(s);
-        }
-      };
-
-      const sep = scriptUrl.indexOf('?') >= 0 ? '&' : '?';
-      s.src = scriptUrl + sep + 'callback=' + encodeURIComponent(cbName) + '&t=' + Date.now();
-      s.onerror = function() {
-        try { delete window[cbName]; } catch(e) {}
-        if (afterSend) {
-          showToast('Report inviato (sync numero non disponibile)', 'error');
-          setTimeout(() => resetForm(), 900);
-        }
-      };
-      document.body.appendChild(s);
-    }
-
-    function toggleCheck(el) {
-      el.classList.toggle('checked');
       const cb = el.querySelector('input[type="checkbox"]');
-      if (cb) cb.checked = el.classList.contains('checked');
+      const newVal = cb ? !cb.checked : !el.classList.contains('checked');
+      if (cb) cb.checked = newVal;
+      el.classList.toggle('checked', newVal);
     }
 
     function setYN(btn, val) {
@@ -704,7 +626,6 @@
       return {
         numero_report: formCount,
         timestamp: new Date().toISOString(),
-
         cliente: v('cliente'),
         luogo: v('luogo'),
         data: v('data'),
@@ -713,20 +634,17 @@
         agente_bs: v('agente'),
         oggetto: v('oggetto'),
         note_sez1: v('noteSez1'),
-
         tipologia_servizio: v('tipologiaServizio'),
         temperatura: v('temperatura'),
         aggressivi_chimici_op: v('aggressiviChimici'),
         cicli_lavaggio: v('cicliLavaggio'),
         ciclature_termiche: v('ciclatureTermiche'),
         tempi_rientro: v('tempiRientro'),
-
         problema_corrosione: document.getElementById('chkCorrosione').checked ? 'SÌ' : 'NO',
         problema_vaiolature: document.getElementById('chkVaiolature').checked ? 'SÌ' : 'NO',
         problema_erosione: document.getElementById('chkErosione').checked ? 'SÌ' : 'NO',
         problema_cricche: document.getElementById('chkCricche').checked ? 'SÌ' : 'NO',
         note_sez2: v('noteSez2'),
-
         sic_aggressivi: ynState['ynAggressivi'] || '',
         sic_atex: ynState['ynAtex'] || '',
         sic_polveri: ynState['ynPolveri'] || '',
@@ -736,25 +654,19 @@
         sic_220v: ynState['yn220V'] || '',
         sic_formazione: ynState['ynFormazione'] || '',
         note_sez3: v('noteSez3'),
-
         sez4_piano_lavoro: v('sez4PianoLavoro'),
         sez4_movimentazione: v('sez4Movimentazione'),
         sez4_distanza_parcheggio: v('sez4DistanzaParcheggio'),
-
         sez4_area_aperto: document.getElementById('chkSez4Aperto').checked ? 'SÌ' : 'NO',
         sez4_area_chiuso: document.getElementById('chkSez4Chiuso').checked ? 'SÌ' : 'NO',
         sez4_area_riscaldata: document.getElementById('chkSez4Riscaldata').checked ? 'SÌ' : 'NO',
-
         sez4_scale: document.getElementById('chkSez4Scale').checked ? 'SÌ' : 'NO',
         sez4_ascensore: document.getElementById('chkSez4Ascensore').checked ? 'SÌ' : 'NO',
-
         sez4_passi_uomo_diam: v('sez4PassiUomoDiam'),
         sez4_illuminazione: v('sez4Illuminazione'),
-
         sez4_corpo: document.getElementById('chkSez4Corpo').checked ? 'SÌ' : 'NO',
         sez4_braccio: document.getElementById('chkSez4Braccio').checked ? 'SÌ' : 'NO',
         sez4_mano: document.getElementById('chkSez4Mano').checked ? 'SÌ' : 'NO',
-
         sez4_ventilazione: v('sez4Ventilazione'),
         note_sez4: v('noteSez4'),
         note_raccolta_dati: v('noteRaccoltaDati')
@@ -768,31 +680,27 @@
         setTimeout(() => document.getElementById('configModal').classList.add('open'), 600);
         return;
       }
-
       const data = collectData();
       const btn = document.getElementById('btnSend');
       btn.disabled = true;
       btn.textContent = 'INVIO IN CORSO...';
-
       try {
-        // POST semplice (evita preflight CORS): text/plain + no-cors
         await fetch(scriptUrl, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-
-        // riallineo il numero dal foglio (JSONP)
-        loadCounterFromServer(true);
-
+        formCount++;
+        localStorage.setItem('bs_form_count', formCount);
+        showToast('✓ Report N°' + (formCount - 1) + ' inviato!');
+        setTimeout(() => resetForm(), 900);
       } catch (e) {
         console.error(e);
         showToast('Errore di connessione', 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML =
-          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> INVIA REPORT';
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> INVIA REPORT';
       }
     }
 
@@ -802,13 +710,11 @@
         if (el.type === 'date') { el.valueAsDate = new Date(); }
         else { el.value = ''; }
       });
-
       document.querySelectorAll('.check-item').forEach(el => {
         el.classList.remove('checked');
         const cb = el.querySelector('input[type="checkbox"]');
         if (cb) cb.checked = false;
       });
-
       document.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('active-si','active-no'));
       ynState = {};
       document.getElementById('formCounter').textContent = 'N° ' + formCount;
@@ -822,8 +728,6 @@
         localStorage.setItem('bs_script_url', url);
         document.getElementById('configModal').classList.remove('open');
         showToast('✓ URL salvato');
-        // sync immediato dopo salvataggio
-        try { loadCounterFromServer(false); } catch(e) {}
       }
     }
 
@@ -833,9 +737,6 @@
       t.className = 'toast' + (type === 'error' ? ' error' : '') + ' show';
       setTimeout(() => t.classList.remove('show'), 2600);
     }
-
-    // Sync iniziale del numero report dal foglio
-    try { loadCounterFromServer(false); } catch(e) {}
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
