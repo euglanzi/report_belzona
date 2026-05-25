@@ -14,12 +14,13 @@
       --bg: #ffffff;
       --surface: #ffffff;
       --surface2: #f5f6f8;
-      --accent: #e63946;
-      --accent2: #457b9d;
+      --accent: #1e3a5f;
+      --accent2: #2c5d8a;
       --text: #1a1a2e;
       --text-dim: #5b6475;
       --border: #d9dee7;
       --ok: #2a9d8f;
+      --danger: #c1121f;
       --radius: 10px;
       --font-head: 'Barlow Condensed', sans-serif;
       --font-body: 'Barlow', sans-serif;
@@ -276,7 +277,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     .yn-btn.active-si { background: var(--ok); border-color: var(--ok); color:#fff; }
-    .yn-btn.active-no { background: var(--accent); border-color: var(--accent); color:#fff; }
+    .yn-btn.active-no { background: var(--danger); border-color: var(--danger); color:#fff; }
     /* BOTTOM BAR */
     .bottom-bar {
       position: fixed;
@@ -350,7 +351,7 @@
       white-space: nowrap;
     }
     .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
-    .toast.error { background: var(--accent); }
+    .toast.error { background: var(--danger); }
     /* MODAL */
     .modal-overlay {
       display:none;
@@ -590,19 +591,28 @@
   </div>
 
   <script>
-    let formCount = parseInt(localStorage.getItem('bs_form_count') || '1');
+    function pad2(n){return String(n).padStart(2,'0');}
+    function makeReportId(d=new Date()){
+      const yyyy=d.getFullYear();
+      const mm=pad2(d.getMonth()+1);
+      const dd=pad2(d.getDate());
+      const hh=pad2(d.getHours());
+      const mi=pad2(d.getMinutes());
+      return `${yyyy}-${mm}-${dd}-${hh}.${mi}`;
+    }
+
+    let reportId = makeReportId();
+    document.getElementById('formCounter').textContent = reportId;
+
     let ynState = {};
-    document.getElementById('formCounter').textContent = 'N° ' + formCount;
     const d = document.getElementById('data');
     if (d) d.valueAsDate = new Date();
     const savedUrl = localStorage.getItem('bs_script_url');
     if (savedUrl) document.getElementById('scriptUrl').value = savedUrl;
 
-    // ✅ FIX CHECKBOX (solo fix richiesto)
+    // ✅ checkbox toggle (già fixato)
     function toggleCheck(el, ev) {
-      // evita comportamenti speciali del <label> e doppi toggle
       if (ev) ev.preventDefault();
-
       const cb = el.querySelector('input[type="checkbox"]');
       const newVal = cb ? !cb.checked : !el.classList.contains('checked');
       if (cb) cb.checked = newVal;
@@ -624,7 +634,7 @@
 
     function collectData() {
       return {
-        numero_report: formCount,
+        numero_report: reportId,
         timestamp: new Date().toISOString(),
         cliente: v('cliente'),
         luogo: v('luogo'),
@@ -691,9 +701,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-        formCount++;
-        localStorage.setItem('bs_form_count', formCount);
-        showToast('✓ Report N°' + (formCount - 1) + ' inviato!');
+        showToast('✓ Report ' + reportId + ' inviato!');
         setTimeout(() => resetForm(), 900);
       } catch (e) {
         console.error(e);
@@ -717,7 +725,8 @@
       });
       document.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('active-si','active-no'));
       ynState = {};
-      document.getElementById('formCounter').textContent = 'N° ' + formCount;
+      reportId = makeReportId();
+      document.getElementById('formCounter').textContent = reportId;
       window.scrollTo({ top: 0, behavior: 'smooth' });
       showToast('✦ Nuovo form pronto');
     }
