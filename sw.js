@@ -1,5 +1,5 @@
 // Minimal service worker for installability + basic offline cache
-const CACHE_NAME = 'report-sopralluogo-v1';
+const CACHE_NAME = 'report-sopralluogo-v2';
 const ASSETS = [
   './',
   './index.html',
