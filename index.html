@@ -716,6 +716,144 @@
       return (el && el.value ? el.value.trim() : '');
     }
 
+    // --- Allegati immagini (in memoria) ---
+let attachedImages = []; // [{name,mime,data}]
+
+// (OPZIONALE) Se nel tuo HTML esistono questi elementi, abilita upload immagini:
+const imgInput = document.getElementById('imgInput');
+const imgPreview = document.getElementById('imgPreview');
+
+if (imgInput && imgPreview) {
+  imgInput.addEventListener('change', async (ev) => {
+    const files = Array.from(ev.target.files || []);
+    attachedImages = [];
+    imgPreview.innerHTML = '';
+
+    for (const f of files) {
+      const item = await fileToCompressedBase64_(f, 1280, 0.75);
+      attachedImages.push(item);
+      addPreviewCard_(item);
+    }
+  });
+}
+
+function escapeHtml_(s){
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+function addPreviewCard_(item){
+  const src = `data:${item.mime};base64,${item.data}`;
+  const card = document.createElement('div');
+  card.className = 'img-card';
+  card.innerHTML = `
+    <img src="${src}" alt="">
+    <div class="cap">
+      <span>${escapeHtml_(item.name || '')}</span>
+      <button type="button">Rimuovi</button>
+    </div>
+  `;
+  card.querySelector('button').addEventListener('click', () => {
+    attachedImages = attachedImages.filter(x => x !== item);
+    card.remove();
+    if (attachedImages.length === 0 && imgInput) imgInput.value = '';
+  });
+  imgPreview.appendChild(card);
+}
+
+async function fileToCompressedBase64_(file, maxSide, quality){
+  const dataUrl = await readAsDataURL_(file);
+  const img = await loadImage_(dataUrl);
+  const {w, h} = fitWithin_(img.width, img.height, maxSide);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, w, h);
+
+  const mime = (file.type && file.type.startsWith('image/')) ? file.type : 'image/jpeg';
+  const outUrl = canvas.toDataURL(mime, quality);
+  const b64 = outUrl.split(',')[1];
+  return { name: file.name, mime, data: b64 };
+}
+
+function fitWithin_(w,h,maxSide){
+  if (w <= maxSide && h <= maxSide) return {w,h};
+  const ratio = w / h;
+  if (w >= h) return { w: maxSide, h: Math.round(maxSide / ratio) };
+  return { w: Math.round(maxSide * ratio), h: maxSide };
+}
+
+function readAsDataURL_(file){
+  return new Promise((resolve,reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function loadImage_(src){
+  return new Promise((resolve,reject)=>{
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+// --- Snapshot HTML “stampabile” per PDF ---
+function buildPrintableHtml_(){
+  const clone = document.documentElement.cloneNode(true);
+
+  // rimuovo pezzi UI non utili in PDF
+  clone.querySelectorAll('.bottom-bar, .modal-overlay, script').forEach(n => n.remove());
+
+  // se ci sono immagini, sostituisco la sezione allegati con immagini inline
+  const previewWrap = clone.querySelector('#attachmentsSection');
+  if (previewWrap) {
+    if (!attachedImages.length) {
+      previewWrap.remove();
+    } else {
+      const body = previewWrap.querySelector('.section-body');
+      if (body) {
+        const htmlImgs = attachedImages.map((it) => {
+          const src = `data:${it.mime};base64,${it.data}`;
+          return `
+            <div style="margin:0 0 10px 0; page-break-inside:avoid;">
+              <img src="${src}" style="max-width:100%; height:auto; display:block;">
+              <div style="font-size:11px; color:#555; margin-top:4px;">${escapeHtml_(it.name || '')}</div>
+            </div>
+          `;
+        }).join('');
+        body.innerHTML = `
+          <div style="font-family:Arial,sans-serif; font-size:12px; color:#333;">
+            <div style="font-weight:700; margin-bottom:8px;">Allegati immagini</div>
+            ${htmlImgs}
+          </div>
+        `;
+      }
+    }
+  }
+
+  // aggiusto stampa
+  const style = clone.querySelector('style');
+  if (style) {
+    style.textContent += `
+      @page { margin: 12mm; }
+      img { max-width: 100% !important; height: auto !important; }
+      .content { max-width: none !important; }
+    `;
+  }
+
+  return '<!DOCTYPE html>' + clone.outerHTML;
+}
+
     const imgInput = document.getElementById('imgInput');
     const imgPreview = document.getElementById('imgPreview');
     let attachedImages = []; // [{name,mime,data}]
@@ -899,9 +1037,9 @@
         sez4_ventilazione: v('sez4Ventilazione'),
         note_sez4: v('noteSez4'),
         note_raccolta_dati: v('noteRaccoltaDati'),
-
         html_snapshot: buildPrintableHtml_(),
         images: attachedImages
+
       };
     }
 
