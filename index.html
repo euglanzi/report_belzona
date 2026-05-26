@@ -806,8 +806,7 @@
 // - mette il page-break PRIMA SOLO dell'header della sezione 5 (non dell'intera card)
 // - rimuove il titolo duplicato "Allegati immagini" dentro la sezione 5 (resta solo l'header della card)
 
-function buildPrintableHtml_(){
-  const clone = document.documentElement.cloneNode(true);
+function buildPrintableHtml_(){function buildPrintableHtml const clone = document.documentElement.cloneNode(true);
 
   // 1) Copia valori correnti nei campi del clone (property -> attribute)
   document.querySelectorAll('input, textarea, select').forEach(el => {
@@ -831,6 +830,27 @@ function buildPrintableHtml_(){
       if (idx >= 0 && c.options && c.options[idx]) c.options[idx].setAttribute('selected', 'selected');
     }
   });
+
+  // ✅ 1-bis) ***QUI ESATTO***: riallinea la classe .checked sul clone
+  const liveChecks = document.querySelectorAll('.check-item input[type="checkbox"]');
+  liveChecks.forEach(inp => {
+    if (!inp.id) return;
+    const cInp = clone.querySelector('#' + inp.id);
+    if (!cInp) return;
+    const cWrap = cInp.closest('.check-item');
+    if (!cWrap) return;
+    if (inp.checked) cWrap.classList.add('checked');
+    else cWrap.classList.remove('checked');
+  });
+
+  // ... DOPO vengono tutte le altre cose:
+  // - clone.querySelectorAll('.bottom-bar, ...').forEach(remove)
+  // - impaginazione (breakBefore)
+  // - gestione allegati
+  // - css stampa
+  // - return '<!DOCTYPE html>' + clone.outerHTML;
+}
+
 
   // 2) Rimuove UI non stampabile
   clone.querySelectorAll('.bottom-bar, .modal-overlay, script').forEach(n => n.remove());
