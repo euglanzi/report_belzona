@@ -798,48 +798,99 @@
       });
     }
 
-    // ======== HTML snapshot (for GAS PDF) ========
-    function buildPrintableHtml_(){
-      const clone = document.documentElement.cloneNode(true);
-      clone.querySelectorAll('.bottom-bar, .modal-overlay, script').forEach(n => n.remove());
+  // ===================== PATCH PDF (valori + impaginazione) =====================
+// 1) Sostituisci la tua funzione buildPrintableHtml_ con questa.
+// 2) Non duplicare funzioni/variabili: tienine UNA sola.
 
-      const previewWrap = clone.querySelector('#attachmentsSection');
-      if (previewWrap) {
-        if (!attachedImages.length) {
-          previewWrap.remove();
-        } else {
-          const body = previewWrap.querySelector('.section-body');
-          if (body) {
-            const htmlImgs = attachedImages.map((it) => {
-              const src = `data:${it.mime};base64,${it.data}`;
-              return `
-                <div style="margin:0 0 10px 0; page-break-inside:avoid;">
-                  <img src="${src}" style="max-width:100%; height:auto; display:block;">
-                  <div style="font-size:11px; color:#555; margin-top:4px;">${escapeHtml_(it.name || '')}</div>
-                </div>
-              `;
-            }).join('');
-            body.innerHTML = `
-              <div style="font-family:Arial,sans-serif; font-size:12px; color:#333;">
-                <div style="font-weight:700; margin-bottom:8px;">Allegati immagini</div>
-                ${htmlImgs}
-              </div>
-            `;
-          }
-        }
+function buildPrintableHtml_(){
+  // 1) Clono l'intero documento
+  const clone = document.documentElement.cloneNode(true);
+
+  // 2) Copio i valori correnti nei corrispondenti elementi del clone.
+  //    Motivo: il valore digitato dall'utente è in una PROPERTY (el.value),
+  //    mentre nel markup serializzato serve l'ATTRIBUTO value / selected / checked.
+  //    Senza questo passaggio, nel PDF vedi i campi vuoti.
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    if (!el.id) return;
+    const c = clone.querySelector('#' + el.id);
+    if (!c) return;
+
+    const tag = (c.tagName || '').toUpperCase();
+    if (tag === 'INPUT') {
+      c.setAttribute('value', el.value ?? '');
+      const t = (c.getAttribute('type') || '').toLowerCase();
+      if (t === 'checkbox' || t === 'radio') {
+        if (el.checked) c.setAttribute('checked', 'checked');
+        else c.removeAttribute('checked');
       }
+    } else if (tag === 'TEXTAREA') {
+      c.textContent = el.value ?? '';
+    } else if (tag === 'SELECT') {
+      const idx = el.selectedIndex;
+      Array.from(c.options || []).forEach(o => o.removeAttribute('selected'));
+      if (idx >= 0 && c.options && c.options[idx]) c.options[idx].setAttribute('selected', 'selected');
+    }
+  });
 
-      const style = clone.querySelector('style');
-      if (style) {
-        style.textContent += `
-          @page { margin: 12mm; }
-          img { max-width: 100% !important; height: auto !important; }
-          .content { max-width: none !important; }
+  // 3) Rimuovo UI non stampabile
+  clone.querySelectorAll('.bottom-bar, .modal-overlay, script').forEach(n => n.remove());
+
+  // 4) Impaginazione forzata:
+  //    Sezioni 1-2 prima pagina, Sez.3 seconda, Sez.4 terza, Sez.5 (allegati) dopo.
+  const cards = clone.querySelectorAll('.content .section-card');
+  cards.forEach(card => {
+    card.style.breakInside = 'avoid';
+    card.style.pageBreakInside = 'avoid';
+    card.style.overflow = 'visible';
+  });
+  if (cards[2]) { cards[2].style.breakBefore = 'page'; cards[2].style.pageBreakBefore = 'always'; }
+  if (cards[3]) { cards[3].style.breakBefore = 'page'; cards[3].style.pageBreakBefore = 'always'; }
+  if (cards[4]) { cards[4].style.breakBefore = 'page'; cards[4].style.pageBreakBefore = 'always'; }
+
+  // 5) Allegati immagini: se vuoto rimuovo, se presente rendo immagini inline
+  const previewWrap = clone.querySelector('#attachmentsSection');
+  if (previewWrap) {
+    if (!attachedImages || !attachedImages.length) {
+      previewWrap.remove();
+    } else {
+      const body = previewWrap.querySelector('.section-body');
+      if (body) {
+        const htmlImgs = attachedImages.map(it => {
+          const src = `data:${it.mime};base64,${it.data}`;
+          return `
+            <div class="img-wrap" style="margin:0 0 10px 0; page-break-inside:avoid; break-inside:avoid;">
+              <img src="${src}" style="max-width:100%; height:auto; display:block;" />
+              <div class="caption" style="font-size:11px; color:#555; margin-top:4px;">${escapeHtml_(it.name || '')}</div>
+            </div>
+          `;
+        }).join('');
+
+        body.innerHTML = `
+          <div style="font-family:Arial,sans-serif; font-size:12px; color:#333;">
+            <div style="font-weight:700; margin-bottom:8px;">Allegati immagini</div>
+            ${htmlImgs}
+          </div>
         `;
       }
-
-      return '<!DOCTYPE html>' + clone.outerHTML;
     }
+  }
+
+  // 6) CSS di stampa (evita header sticky e migliora resa)
+  const style = clone.querySelector('style');
+  if (style) {
+    style.textContent += `
+      @page { margin: 12mm; }
+      .app-header { position: static !important; }
+      .content { max-width: none !important; }
+      img { max-width: 100% !important; height: auto !important; }
+      .section-card { box-shadow: none !important; }
+    `;
+  }
+
+  return '<!DOCTYPE html>' + clone.outerHTML;
+}
+// =================== /PATCH PDF ===================
+
 
     // ======== Data payload ========
     function collectData() {
