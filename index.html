@@ -461,6 +461,23 @@
       border-radius: 6px;
       cursor:pointer;
     }
+
+    /* ===== PDF CHECKBOX TICK FIX (print-only) ===== */
+    @media print {
+      /* Il convertitore HTML->PDF spesso non renderizza bene l'SVG: uso un tick testuale */
+      .check-box svg { display: none !important; }
+      .check-box::after { content: ''; display: none; }
+      .check-item.checked .check-box::after {
+        content: '✓';
+        display: block;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 900;
+        line-height: 1;
+        transform: translateY(-1px);
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -478,7 +495,7 @@
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
       </button>
-    <img class="belzona-logo" src="./icons/belzona_logo.png" alt="Belzona" />
+      <img class="belzona-logo" src="https://www.belzona.com/assets/images/belzonalogo_en.png" alt="Belzona" />
     </div>
   </div>
 
@@ -822,6 +839,10 @@ function buildPrintableHtml_(){
       if (t === 'checkbox' || t === 'radio') {
         if (el.checked) c.setAttribute('checked', 'checked');
         else c.removeAttribute('checked');
+
+        // ✅ PDF: allinea anche la classe .checked sul wrapper (.check-item) nel clone
+        const w = c.closest('.check-item');
+        if (w) w.classList.toggle('checked', !!el.checked);
       }
     } else if (tag === 'TEXTAREA') {
       c.textContent = el.value ?? '';
