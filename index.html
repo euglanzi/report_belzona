@@ -47,6 +47,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
     }
     .brand { display:flex; flex-direction:column; }
     .brand-top {
@@ -70,6 +71,9 @@
       align-items:center;
       gap: 10px;
       flex: 0 0 auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      min-width: 0;
     }
     .form-counter {
       background: var(--accent);
@@ -81,6 +85,9 @@
       border-radius: 20px;
       letter-spacing: 1px;
       white-space: nowrap;
+      max-width: 70vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .settings-btn {
       background: none;
@@ -94,6 +101,7 @@
       height: 28px;
       width: auto;
       object-fit: contain;
+      max-width: 110px;
     }
 
     /* CONTENT */
@@ -181,7 +189,6 @@
       .belzona-logo { height: 24px; }
     }
 
-    /* SUBSECTIONS */
     .subsection-label {
       font-family: var(--font-head);
       font-size: 13px;
@@ -301,6 +308,7 @@
       z-index: 200;
       max-width: 650px;
       margin: 0 auto;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
     }
     .btn-reset {
       flex: 0 0 auto;
@@ -414,30 +422,7 @@
     .modal-btn.secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
     .divider { height:1px; background: var(--border); margin: 12px 0; }
 
-    /* --- Mobile hardening --- */
-    html, body { max-width: 100%; overflow-x: hidden; }
-    .app-header { flex-wrap: wrap; }
-    .header-right { flex-wrap: wrap; justify-content: flex-end; min-width: 0; }
-    .form-counter{ max-width: 60vw; overflow: hidden; text-overflow: ellipsis; }
-    .belzona-logo{ max-width: 110px; height: auto; }
-    .bottom-bar{
-      left: 0; right: 0;
-      max-width: none;
-      margin: 0;
-      padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    }
-    @media (max-width: 420px){
-      .app-header{ padding: 10px 12px 8px; }
-      .brand-name{ font-size: 18px; }
-      .brand-top{ letter-spacing: 2px; }
-      .form-counter{ max-width: 70vw; font-size: 12px; }
-      .belzona-logo{ max-width: 90px; }
-      .bottom-bar{ padding: 10px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
-      .btn-send{ font-size: 16px; letter-spacing: 1px; padding: 12px; }
-      .btn-reset{ padding: 12px 14px; font-size: 20px; }
-    }
-
-    /* --- Allegati immagini (preview) --- */
+    /* Allegati immagini */
     .img-uploader {
       border: 1.5px dashed var(--border);
       border-radius: 8px;
@@ -675,6 +660,7 @@
   </div>
 
   <script>
+    // ======== CORE IDs ========
     function pad2(n){return String(n).padStart(2,'0');}
     function makeReportId(d=new Date()){
       const yyyy=d.getFullYear();
@@ -686,15 +672,20 @@
     }
 
     let reportId = makeReportId();
-    document.getElementById('formCounter').textContent = 'Report N° ' + reportId;
+    const formCounterEl = document.getElementById('formCounter');
+    if (formCounterEl) formCounterEl.textContent = 'Report N° ' + reportId;
 
     let ynState = {};
     const d = document.getElementById('data');
     if (d) d.valueAsDate = new Date();
 
     const savedUrl = localStorage.getItem('bs_script_url');
-    if (savedUrl) document.getElementById('scriptUrl').value = savedUrl;
+    if (savedUrl) {
+      const su = document.getElementById('scriptUrl');
+      if (su) su.value = savedUrl;
+    }
 
+    // ======== UI helpers ========
     function toggleCheck(el, ev) {
       if (ev) ev.preventDefault();
       const cb = el.querySelector('input[type="checkbox"]');
@@ -702,6 +693,7 @@
       if (cb) cb.checked = newVal;
       el.classList.toggle('checked', newVal);
     }
+    window.toggleCheck = toggleCheck;
 
     function setYN(btn, val) {
       const field = btn.getAttribute('data-field');
@@ -710,51 +702,43 @@
       btn.classList.add(val === 'si' ? 'active-si' : 'active-no');
       ynState[field] = val;
     }
+    window.setYN = setYN;
 
     function v(id) {
       const el = document.getElementById(id);
       return (el && el.value ? el.value.trim() : '');
     }
 
+    // ======== Attachments (images) ========
+    let attachedImages = []; // [{name,mime,data}]
     const imgInput = document.getElementById('imgInput');
     const imgPreview = document.getElementById('imgPreview');
-    let attachedImages = []; // [{name,mime,data}]
-
-    imgInput.addEventListener('change', async (ev) => {
-      const files = Array.from(ev.target.files || []);
-      attachedImages = [];
-      imgPreview.innerHTML = '';
-      for (const f of files) {
-        const item = await fileToCompressedBase64_(f, 1280, 0.75);
-        attachedImages.push(item);
-        addPreviewCard_(item);
-      }
-    });
 
     function escapeHtml_(s){
       return String(s)
         .replace(/&/g,'&amp;')
         .replace(/</g,'&lt;')
         .replace(/>/g,'&gt;')
-        .replace(/\"/g,'&quot;')
+        .replace(/"/g,'&quot;')
         .replace(/'/g,'&#039;');
     }
 
     function addPreviewCard_(item){
+      if (!imgPreview) return;
       const src = `data:${item.mime};base64,${item.data}`;
       const card = document.createElement('div');
       card.className = 'img-card';
       card.innerHTML = `
         <img src="${src}" alt="">
         <div class="cap">
-          <span>${escapeHtml_(item.name)}</span>
+          <span>${escapeHtml_(item.name || '')}</span>
           <button type="button">Rimuovi</button>
         </div>
       `;
       card.querySelector('button').addEventListener('click', () => {
         attachedImages = attachedImages.filter(x => x !== item);
         card.remove();
-        if (attachedImages.length === 0) imgInput.value = '';
+        if (attachedImages.length === 0 && imgInput) imgInput.value = '';
       });
       imgPreview.appendChild(card);
     }
@@ -763,11 +747,13 @@
       const dataUrl = await readAsDataURL_(file);
       const img = await loadImage_(dataUrl);
       const {w, h} = fitWithin_(img.width, img.height, maxSide);
+
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
+
       const mime = (file.type && file.type.startsWith('image/')) ? file.type : 'image/jpeg';
       const outUrl = canvas.toDataURL(mime, quality);
       const b64 = outUrl.split(',')[1];
@@ -799,6 +785,20 @@
       });
     }
 
+    if (imgInput && imgPreview) {
+      imgInput.addEventListener('change', async (ev) => {
+        const files = Array.from(ev.target.files || []);
+        attachedImages = [];
+        imgPreview.innerHTML = '';
+        for (const f of files) {
+          const item = await fileToCompressedBase64_(f, 1280, 0.75);
+          attachedImages.push(item);
+          addPreviewCard_(item);
+        }
+      });
+    }
+
+    // ======== HTML snapshot (for GAS PDF) ========
     function buildPrintableHtml_(){
       const clone = document.documentElement.cloneNode(true);
       clone.querySelectorAll('.bottom-bar, .modal-overlay, script').forEach(n => n.remove());
@@ -815,7 +815,7 @@
               return `
                 <div style="margin:0 0 10px 0; page-break-inside:avoid;">
                   <img src="${src}" style="max-width:100%; height:auto; display:block;">
-                  <div style="font-size:11px; color:#555; margin-top:4px;">${escapeHtml_(it.name)}</div>
+                  <div style="font-size:11px; color:#555; margin-top:4px;">${escapeHtml_(it.name || '')}</div>
                 </div>
               `;
             }).join('');
@@ -841,6 +841,7 @@
       return '<!DOCTYPE html>' + clone.outerHTML;
     }
 
+    // ======== Data payload ========
     function collectData() {
       return {
         numero_report: reportId,
@@ -900,11 +901,13 @@
         note_sez4: v('noteSez4'),
         note_raccolta_dati: v('noteRaccoltaDati'),
 
+        // ✅ chiave per far scattare la generazione PDF nel GAS
         html_snapshot: buildPrintableHtml_(),
         images: attachedImages
       };
     }
 
+    // ======== Send / Reset / Config / Toast ========
     async function sendForm() {
       const scriptUrl = localStorage.getItem('bs_script_url');
       if (!scriptUrl) {
@@ -934,6 +937,7 @@
         btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> INVIA REPORT';
       }
     }
+    window.sendForm = sendForm;
 
     function resetForm() {
       document.querySelectorAll('.field-input').forEach(el => {
@@ -950,14 +954,16 @@
       ynState = {};
 
       attachedImages = [];
-      imgPreview.innerHTML = '';
-      imgInput.value = '';
+      if (imgPreview) imgPreview.innerHTML = '';
+      if (imgInput) imgInput.value = '';
 
       reportId = makeReportId();
-      document.getElementById('formCounter').textContent = 'Report N° ' + reportId;
+      if (formCounterEl) formCounterEl.textContent = 'Report N° ' + reportId;
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
       showToast('✦ Nuovo form pronto');
     }
+    window.resetForm = resetForm;
 
     function saveConfig() {
       const url = document.getElementById('scriptUrl').value.trim();
@@ -967,6 +973,7 @@
         showToast('✓ URL salvato');
       }
     }
+    window.saveConfig = saveConfig;
 
     function showToast(msg, type = '') {
       const t = document.getElementById('toast');
@@ -975,6 +982,7 @@
       setTimeout(() => t.classList.remove('show'), 2600);
     }
 
+    // Service worker (se presente)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(console.error);
