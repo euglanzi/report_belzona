@@ -1118,20 +1118,38 @@ if (t === 'date') {
 
     `;
   }
-// ===== FINAL PDF FORCE (ultima passata): bollino blu + header grigio =====// ===== FINAL PDF FORCE ( = '#1e3a5f';
-    n.style.color = '#fff';
-    n.style.width = '26px';
-    n.style.height = '26px';
-    n.style.borderRadius = '50%';
-    n.style.display = 'flex';
-    n.style.alignItems = 'center';
-    n.style.justifyContent = 'center';
-    n.style.flexShrink = '0';
-    n.style.fontWeight = '700';
-    n.style.webkitPrintColorAdjust = 'exact';
-    n.style.printColorAdjust = 'exact';
-  });
+// ===== FINAL PDF FORCE: bollino blu + header grigio =====
+  try {
+    // background intestazioni
+    clone.querySelectorAll('.section-header').forEach(h => {
+      h.style.background = '#f5f6f8';
+      h.style.borderBottom = '1px solid #d9dee7';
+      h.style.webkitPrintColorAdjust = 'exact';
+      h.style.printColorAdjust = 'exact';
+    });
 
+    // bollino numero
+    clone.querySelectorAll('.section-num').forEach(n => {
+      n.style.background = '#1e3a5f';
+      n.style.color = '#fff';
+      n.style.width = '26px';
+      n.style.height = '26px';
+      n.style.borderRadius = '50%';
+      n.style.display = 'flex';
+      n.style.alignItems = 'center';
+      n.style.justifyContent = 'center';
+      n.style.flexShrink = '0';
+      n.style.fontWeight = '700';
+      n.style.webkitPrintColorAdjust = 'exact';
+      n.style.printColorAdjust = 'exact';
+    });
+
+    // forza colori in stampa
+    const st = clone.querySelector('style');
+    if (st && !st.textContent.includes('print-color-adjust')) {
+      st.textContent += "\n@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}\n";
+    }
+  } catch(e) {}
 
   return '<!DOCTYPE html>' + clone.outerHTML;
 }
