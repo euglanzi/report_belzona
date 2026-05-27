@@ -795,6 +795,26 @@
     const imgInput = document.getElementById('imgInput');
     const imgPreview = document.getElementById('imgPreview');
 
+    // Limiti allegati (sicurezza/quote)
+const MAX_IMAGES = 5;
+const MAX_IMAGES_B64_BYTES = 5 * 1024 * 1024; // 5 MB complessivi (solo parte base64, escluso header data:)
+
+function b64Bytes_(b64){
+  // stima byte reali del base64: len*3/4 - padding
+  if (!b64) return 0;
+  const s = String(b64);
+  const pad = (s.endsWith('==') ? 2 : (s.endsWith('=') ? 1 : 0));
+  return Math.floor((s.length * 3) / 4) - pad;
+}
+
+function totalImagesBytes_(){
+  return attachedImages.reduce((acc, it) => acc + b64Bytes_(it.data), 0);
+}
+
+function fmtMB_(bytes){
+  return (bytes / (1024*1024)).toFixed(2);
+}
+
     function escapeHtml_(s){
       return String(s)
         .replace(/&/g,'&amp;')
@@ -867,16 +887,39 @@
     }
 
     if (imgInput && imgPreview) {
-      imgInput.addEventListener('change', async (ev) => {
-        const files = Array.from(ev.target.files || []);
-        attachedImages = [];
-        imgPreview.innerHTML = '';
-        for (const f of files) {
-          const item = await fileToCompressedBase64_(f, 1280, 0.75);
-          attachedImages.push(item);
-          addPreviewCard_(item);
-        }
-      });
+     imgInput.addEventListener('change', async (ev) => {
+  const filesAll = Array.from(ev.target.files || []);
+
+  // reset
+  attachedImages = [];
+  imgPreview.innerHTML = '';
+  if (filesAll.length === 0) return;
+
+  // limite numero immagini
+  const files = filesAll.slice(0, MAX_IMAGES);
+  if (filesAll.length > MAX_IMAGES) {
+    showToast(`⚠️ Puoi allegare al massimo ${MAX_IMAGES} immagini. Verranno prese le prime ${MAX_IMAGES}.`, 'error');
+  }
+
+  let tot = 0;
+  for (const f of files) {
+    const item = await fileToCompressedBase64_(f, 1280, 0.75);
+    const b = b64Bytes_(item.data);
+
+    if (tot + b > MAX_IMAGES_B64_BYTES) {
+      const remaining = MAX_IMAGES_B64_BYTES - tot;
+      showToast(`⚠️ Limite allegati superato (max 5 MB). Immagine "${f.name}" non aggiunta. Spazio residuo: ${fmtMB_(Math.max(0, remaining))} MB`, 'error');
+      break;
+    }
+
+    attachedImages.push(item);
+    addPreviewCard_(item);
+    tot += b;
+  }
+
+  // se alla fine non è rimasto nulla, azzera input
+  if (attachedImages.length === 0 && imgInput) imgInput.value = '';
+});
     }
 
 
