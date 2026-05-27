@@ -897,29 +897,17 @@ function buildPrintableHtml_(){
   });
 
   // 2) Rimuove UI non stampabile
-  clone.querySelectorAll('.bottom-bar, .modal-overlay, script').forEach(n => n.remove());
+  clone.querySelectorAll('.bottom-bar, .modal-overlay, .toast, script').forEach(n => n.remove());
 
   // 3) Impaginazione (Sez 3 e 4 su pagina nuova)
   const cards = clone.querySelectorAll('.content .section-card');
   cards.forEach(card => {
-    const isAttach = (card.id === 'attachmentsSection');
-
-    // Per evitare pagine bianche: NON usare break-inside:avoid sull'intera sezione allegati
-    if (isAttach) {
-      card.style.breakInside = 'auto';
-      card.style.pageBreakInside = 'auto';
-    } else {
-      card.style.breakInside = 'avoid';
-      card.style.pageBreakInside = 'avoid';
-    }
-
+    card.style.breakInside = 'avoid';
+    card.style.pageBreakInside = 'avoid';
     card.style.overflow = 'visible';
     // IMPORTANT: nessun break-after forzato
     card.style.breakAfter = 'auto';
     card.style.pageBreakAfter = 'auto';
-    // IMPORTANT: nessun break-before forzato sulla card (lo gestiamo sull'header allegati)
-    card.style.breakBefore = 'auto';
-    card.style.pageBreakBefore = 'auto';
   });
 
   // cards[0]=Sez1, cards[1]=Sez2, cards[2]=Sez3, cards[3]=Sez4, cards[4]=Sez5
@@ -935,8 +923,8 @@ function buildPrintableHtml_(){
       // page-break prima SOLO dell'header della sezione 5 (evita pagina bianca fantasma)
       const hdr = previewWrap.querySelector('.section-header');
       if (hdr) {
-        hdr.style.breakBefore = 'page';
-        hdr.style.pageBreakBefore = 'always';
+        hdr.style.breakBefore = 'auto';
+        hdr.style.pageBreakBefore = 'auto';
         hdr.style.breakAfter = 'avoid';
         hdr.style.pageBreakAfter = 'avoid';
       }
@@ -975,13 +963,14 @@ function buildPrintableHtml_(){
       .app-header { position: static !important; }
       .content { max-width: none !important; }
       img { max-width: 100% !important; height: auto !important; }
+      /* hide toast in print */
+      .toast { display: none !important; }
       .section-card { box-shadow: none !important; }
 
       /* anti pagine bianche: niente break-after globali */
       .section-card, .section-header, .section-body { break-after: auto !important; page-break-after: auto !important; }
 
       /* anti orfani: header allegati non deve restare da solo */
-      #attachmentsSection { break-inside: auto !important; page-break-inside: auto !important; }
       #attachmentsSection .section-header { break-after: avoid !important; page-break-after: avoid !important; }
       #attachmentsSection .section-body { break-before: avoid !important; page-break-before: avoid !important; }
       #attachmentsSection .img-wrap { break-inside: avoid !important; page-break-inside: avoid !important; }
