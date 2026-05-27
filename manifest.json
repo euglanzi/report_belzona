@@ -1,6 +1,6 @@
 {
-  "name": "Report Sopralluogo",
-  "short_name": "Sopralluogo",
+  "name": "Belzona - Report Sopralluogo",
+  "short_name": "Belzona Report",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
